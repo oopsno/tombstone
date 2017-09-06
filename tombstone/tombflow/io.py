@@ -6,7 +6,7 @@ from tombstone.tombflow.image import rgb_to_bgr
 
 
 class SequentialImageReader(object):
-    def __init__(self, sequence, data_dir=None, name_scope=None, mean=None, dtype=tf.float32, use_bgr=False, modifier=None):
+    def __init__(self, sequence, data_dir=None, name_scope=None, mean=None, dtype=tf.float32, use_bgr=False, modifier=None, expand_dims_at=None):
         with tf.name_scope(name_scope or 'SequentialImageReader'):
             self.path_dataset = TextLineDataset(sequence)
             if modifier is not None:
@@ -29,10 +29,14 @@ class SequentialImageReader(object):
 
             if mean is not None:
                 self.image_dataset = self.image_dataset.map(lambda x: x - mean)
+            
+            if expand_dims_at is not None:
+                self.image_dataset = self.image_dataset.map(lambda x: tf.expand_dims(x, axis=expand_dims_at))
 
             self.path_iterator, self.path_initializer, self.path = self.build_iterator(self.path_dataset)
             self.image_iterator, self.image_initializer, self.image = self.build_iterator(self.image_dataset)
             self.initializers = [self.path_initializer, self.image_initializer]
+            self.total = tf.shape(tf.string_split(tf.expand_dims(tf.read_file(sequence), axis=0), delimiter=b'\n'))[-1]
 
     @staticmethod
     def build_iterator(dataset):
