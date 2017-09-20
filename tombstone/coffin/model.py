@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
 """
-
+A wrapper struggling to modernize regular caffe models
 """
 
 import caffe
@@ -14,12 +14,12 @@ class Model:
 
     @staticmethod
     def __align_shape__(shape):
-        return [1] * (4 - len(shape)) + shape
+        return [1] * (4 - len(shape)) + list(shape)
 
     def feed(self, **kwargs):
         for blob_name, value in kwargs.items():
             self.net.blobs[blob_name].reshape(*self.__align_shape__(value.shape))
-            self.net.blobs.data[...] = value
+            self.net.blobs[blob_name].data[...] = value
         self.__ready__ = False
 
     def forward(self):
@@ -27,6 +27,6 @@ class Model:
             self.net.forward()
             self.__ready__ = True
 
-    def __getitem__(self, item):
+    def __getitem__(self, blob_name):
         self.forward()
-        return self.net.blobs[item].data
+        return self.net.blobs[blob_name].data
