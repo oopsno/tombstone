@@ -36,8 +36,12 @@ class ConfusionMatrix:
         return np.diag(self.hist).sum() / self.hist.sum()
 
     @property
-    def mean_accuracy(self):
+    def perclass_accuracy(self):
         return np.diag(self.hist) / self.hist.sum(1)
+
+    @property
+    def mean_accuracy(self):
+        return np.nanmean(self.perclass_accuracy)
 
     @property
     def iou(self):
@@ -58,10 +62,10 @@ class ConfusionMatrix:
         reports = [
             '{}Mean Accuracy: {:.2%}'.format(indent, self.mean_accuracy),
             '{}Mean IoU:      {:.2%}'.format(indent, self.iou),
-            '{}FWAV Accuracy: {:.2f}'.format(indent, self.fwavacc),
-            '{}Overall Accuracy: {:2%}'.format(indent, self.overall_accuracy)
+            '{}FWAV Accuracy: {:.2%}'.format(indent, self.fwavacc),
+            '{}Overall Accuracy: {:.2%}'.format(indent, self.overall_accuracy)
         ]
         if self.__samples__ > 0:
-            reports.append('{}Mean Loss:     '.format(indent, self.mean_loss))
+            reports.append('{}Mean Loss:     {:.6f}'.format(indent, self.mean_loss))
         stream.writelines(reports)
         stream.flush()
