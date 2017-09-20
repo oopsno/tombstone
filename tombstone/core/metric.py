@@ -65,8 +65,8 @@ class ConfusionMatrix:
             '{}Mean Accuracy:    {:>8.2%}\n'.format(indent, self.mean_accuracy),
             '{}Mean IoU:         {:>8.2%}\n'.format(indent, self.mean_iou),
             '{}FWAV Accuracy:    {:>8.2%}\n'.format(indent, self.fwavacc),
-            '{}Overall Accuracy: {:>8.2%}'.format(indent, self.overall_accuracy)
+            '{}Overall Accuracy: {:>8.2%}\n'.format(indent, self.overall_accuracy)
         ]
         if self.__samples__ > 0:
-            reports.append('\n{}Mean Loss:{:>16.3f}'.format(indent, self.mean_loss))
+            reports.append('{}Mean Loss:{:>16.3f}\n'.format(indent, self.mean_loss))
         stream.writelines(reports)
