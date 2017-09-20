@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
 """
-Confusing matrix based metrics borrowed from
+Confusion matrix based metrics borrowed from
 https://github.com/shelhamer/fcn.berkeleyvision.org
 """
     
@@ -50,22 +50,23 @@ class ConfusionMatrix:
 
     @property
     def mean_iou(self):
-        return np.nanmean(self.iou())
+        return np.nanmean(self.iou)
 
     @property
     def fwavacc(self):
-        return self.hist.sum(1) / self.hist.sum()
+        freq = self.hist.sum(1) / self.hist.sum()
+        s = freq > 0
+        return (freq[s] * self.iou[s]).sum()
 
     def report(self, stream=sys.stdout, indent=0):
         assert type(indent) is int
         indent = ' ' * indent
         reports = [
-            '{}Mean Accuracy: {:.2%}'.format(indent, self.mean_accuracy),
-            '{}Mean IoU:      {:.2%}'.format(indent, self.iou),
-            '{}FWAV Accuracy: {:.2%}'.format(indent, self.fwavacc),
-            '{}Overall Accuracy: {:.2%}'.format(indent, self.overall_accuracy)
+            '{}Mean Accuracy:    {:>8.2%}\n'.format(indent, self.mean_accuracy),
+            '{}Mean IoU:         {:>8.2%}\n'.format(indent, self.mean_iou),
+            '{}FWAV Accuracy:    {:>8.2%}\n'.format(indent, self.fwavacc),
+            '{}Overall Accuracy: {:>8.2%}'.format(indent, self.overall_accuracy)
         ]
         if self.__samples__ > 0:
-            reports.append('{}Mean Loss:     {:.6f}'.format(indent, self.mean_loss))
+            reports.append('\n{}Mean Loss:{:>16.3f}'.format(indent, self.mean_loss))
         stream.writelines(reports)
-        stream.flush()
