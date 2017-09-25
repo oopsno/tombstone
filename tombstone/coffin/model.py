@@ -5,6 +5,10 @@ A wrapper struggling to modernize regular caffe models
 """
 
 import caffe
+import collections
+
+
+LocalLayerInfo = collections.namedtuple('LocalLayerInfo', ['serial', 'name', 'type'])
 
 
 class Model:
